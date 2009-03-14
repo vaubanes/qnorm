@@ -20,3 +20,8 @@ If it is all to difficult, just send your new version to Pjotr - he can take
 care of the repository for you.
 
 Pj.
+
+IMPORTANT: Do not put large datasets in the repository. It is *not* meant for
+that. Datasets should be made available through http - I have a place if you
+want it.
+ 
