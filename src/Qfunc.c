@@ -60,7 +60,7 @@ void terror(char *s)
 // warning message---------------
 void Alerta(char *s,char *s1)
 { fprintf(stdout,"\n[WARNING] %s : %s\n",s,s1); }
-  
+
 
 // Load to memory a list of files
 // datafile format: fileName[tab]nGenes[tab][format][newLINE]
@@ -73,7 +73,7 @@ struct Files* LoadListOfFiles(struct params *p) {
 
         if ((f=fopen(p->fListName,"rt"))==NULL) terror("opening input file");
 
-	if ((L=(struct Files*)calloc(p->nE,sizeof(struct Files)))==NULL) 
+    if ((L=(struct Files*)calloc(p->nE,sizeof(struct Files)))==NULL)
            terror("memory for list of files");
 
         fgets(line,MAXLIN,f);
@@ -81,13 +81,13 @@ struct Files* LoadListOfFiles(struct params *p) {
         while(!feof(f) && j==3) {
 
            if (line[0]!='@') {
-             j=sscanf(line,"%s\t%d\t%c\n",lin2,&g,&t);         
+             j=sscanf(line,"%s\t%d\t%c\n",lin2,&g,&t);
              if (N==p->nE) {
                 fprintf(stderr,"[WARNING] more than %d lines... using firts %d as filenames\n",N,N);
                 p->nE=N;
                 return L;
              }
-         
+
              if (lin2[strlen(lin2)-1]=='\t'||lin2[strlen(lin2)-1]==' ') lin2[strlen(lin2)-1]=0;
 
              if (strlen(lin2)>0) {
@@ -109,19 +109,19 @@ struct Files* LoadListOfFiles(struct params *p) {
        return L;
 }
 
- 
+
 
 void QsortC(double *array,int l,int r,int *index)
 {
    int j;
    if( l < r ) {
- 	// divide and conquer
+     // divide and conquer
        j = partition( array, l, r,index);
        //  j=(l+r)/2;
        QsortC( array, l, j-1,index);
        QsortC( array, j+1, r,index);
    }
-	
+    
 }
 
 
@@ -131,20 +131,20 @@ int partition( double* a, int l, int r, int *indexes) {
    int k;
    double t,pivot;
    pivot = a[l];
-   //i = l; 
+   //i = l;
    //j = r+1;
-		
+        
    while( 1)
    {
-	   do{
-			++i; 
-	   }while( a[i] <= pivot && i <= r );
-	   do{
-		   --j; 
-	   }while( a[j] > pivot );
-   		if( i >= j ) break;
-   		t = a[i]; a[i] = a[j]; a[j] = t;
-		k=indexes[i];indexes[i]=indexes[j];indexes[j]=k;
+       do{
+            ++i;
+       }while( a[i] <= pivot && i <= r );
+       do{
+           --j;
+       }while( a[j] > pivot );
+           if( i >= j ) break;
+           t = a[i]; a[i] = a[j]; a[j] = t;
+        k=indexes[i];indexes[i]=indexes[j];indexes[j]=k;
    }
    t = a[l]; a[l] = a[j]; a[j] = t;
    k=indexes[l];indexes[l]=indexes[j];indexes[j]=k;
@@ -157,9 +157,9 @@ int partition( double* a, int l, int r, int *indexes) {
 // Transpose from Disk to Disk the binary matrix into a tab delimited text file
 
 int TransposeBin2Txt(struct params *p){
-	FILE *f;
+    FILE *f;
         double val, **mat;
-	int i,j;
+    int i,j;
         char NewName[MAXLIN];
         int nG=p->nG;
         int nE=p->nE;
@@ -170,32 +170,32 @@ int TransposeBin2Txt(struct params *p){
         if ((mat=(double **)calloc(nG,sizeof(double*)))==NULL) terror("[Bin2Text] memory for index1");
         for (i=0; i<nG;i++)
           if((mat[i]=(double *)calloc(nE,sizeof(double)))==NULL) terror("[Bin2Text] memory for index2 full matrix");
-  
-	for (i=0; i<nE;i++){
-	   for (j=0; j<nG; j++){
+
+    for (i=0; i<nE;i++){
+       for (j=0; j<nG; j++){
                 fread(&val, 1, sizeof(double), f);
-                mat[j][i]=val;                
+                mat[j][i]=val;
            }
-	}
+    }
         fclose(f);
 
         // Save trasposed text tabulated
 
         sprintf(NewName,"%s.txt",p->fOutName);
-        if ((f=fopen(NewName,"wt"))==NULL) 
+        if ((f=fopen(NewName,"wt"))==NULL)
            terror("[Bin2Text] opening tabulated text file out");
 
-	for (i=0; i<nG;i++){
-	   for (j=0; j<nE; j++){
+    for (i=0; i<nG;i++){
+       for (j=0; j<nE; j++){
                 if (j) fprintf(f,"\t");
                 fprintf(f,"%lf",mat[i][j]);
            }
            fprintf(f,"\n");
          }
-	
+    
         fclose(f);
-	
-	return 1;
+    
+    return 1;
 }
 
 
@@ -229,6 +229,6 @@ void LoadFile(struct Files*fList, int col, double *dataIn){
 void DebugPrint(char *s, double* d, int n){
      int j;
      fprintf(stderr, "%s------------\n",s);
-     for (j=0;j<n;j++) fprintf (stderr,"%f ", d[j]); 
+     for (j=0;j<n;j++) fprintf (stderr,"%f ", d[j]);
      fprintf(stderr,"\n");
 }

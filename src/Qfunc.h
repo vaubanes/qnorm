@@ -47,7 +47,7 @@ void LoadFile(struct Files*, int, double *);
 void terror(char *);
 void Alerta(char *,char *);
 
-void DebugPrint(char *, double*, int); 
+void DebugPrint(char *, double*, int);
 int  TransposeBin2Txt(struct params*);
 void QsortC(double *array,int l,int r,int *index);
 int partition( double* a, int l, int r, int *indexes);

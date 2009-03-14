@@ -1,7 +1,7 @@
 /******************************************************************************
 * FILE: Qnorm.c
 * DESCRIPTION:
-*   Improved sequential prototype for Qnorm 
+*   Improved sequential prototype for Qnorm
 *   Qnormalisation Method: function that implements the ben Bolstad Method
 *   quantile Normalization of High density Oliglonucleotide Array Data
 *
@@ -9,17 +9,17 @@
 * 23.Feb.09  : Using command line argums
 *              Qnorm fMatrix.IN nRow nExp Normalised.fname  mode
 *
-*              fList  : contains a list of nExp filenames (gene-expression data files) 
+*              fList  : contains a list of nExp filenames (gene-expression data files)
 *                          line format: fileName[TAB]nGenes[TAB]FileType[NEWLINE]
-*              nRows  : number of genes in each file 
-*              Normalised.fname where the normalised values will be stored 
+*              nRows  : number of genes in each file
+*              Normalised.fname where the normalised values will be stored
 *                       (as a text-tabulated matrix)
 *              mode : m: keep the Index matrix in memory ( d: in disk)
 *                       THIS VERSION REQUIRES ALL FILES WITH THE SAME NUMBER OF GENES
 *
 *
 *  Command line Parameters
-*         sintaxis:    Qnorm [-Option=value]... 
+*         sintaxis:    Qnorm [-Option=value]...
 *
 *  Option  Description              Default value     alternative Values
 *  ------  -----------------------  -------------     ------------------
@@ -30,10 +30,10 @@
 *  -g      NUmber of genes             15              positive integer
 *  -t      Traspose the fileOut        Not             -T (yes)
 *  -M      Index Matrix in mem         D (in disk)     -M (in memory)
-*  
+*
 * ---------------------------------------------------------------------------
 *
-*	@returns >0 if everything was fine <0 if there was an error
+*    @returns >0 if everything was fine <0 if there was an error
 *
 * LAST REVISED: 27/02/09
 ******************************************************************************/
@@ -47,13 +47,13 @@ int main(int ac, char **av){
 
         p = CommandLine(ac,av);
 
-	if ((fList=LoadListOfFiles(p))==NULL) 
+    if ((fList=LoadListOfFiles(p))==NULL)
            terror("Loading list of files");
 
-        QNormMain(p,fList);	
+        QNormMain(p,fList);    
 
-	
-	return 1;
+    
+    return 1;
 }
 
 
@@ -69,12 +69,12 @@ void QNormMain(struct params *p, struct Files* fList){
    int nE=p->nE;
 
    // Memory===========================================
-   // Index array 
+   // Index array
    if (p->MemIndex) { // in memory - full
      if ((mIndex=(int **)calloc(nG,sizeof(int*)))==NULL) terror("memory for index1");
      for (i=0; i<nG;i++)
         if((mIndex[i]=(int *)calloc(nE,sizeof(int)))==NULL) terror("memory for index2 full matrix");
-   } else 
+   } else
      if ((fI=fopen("~tmp","wb"))==NULL) terror("opening tmp-index file");
 
    // This will always be necessary to decuple the function
@@ -84,7 +84,7 @@ void QNormMain(struct params *p, struct Files* fList){
    if ((dataIn=(double *)calloc(nG,sizeof(double)))==NULL) terror("memory for dataIn array");
    if ((AvG   =(struct Average *)calloc(nG,sizeof(struct Average)))==NULL) terror("memory for Average array");
 
-   for (j=0; j< nG;j++) { // init Accumulation array 
+   for (j=0; j< nG;j++) { // init Accumulation array
       AvG[j].Av=0;        // =HUGE_VAL; ???
       AvG[j].num=0;
    }
@@ -96,19 +96,19 @@ void QNormMain(struct params *p, struct Files* fList){
         LoadFile(fList, i, dataIn);
 
 #ifdef DEBUG
-        DebugPrint("Load", dataIn, fList[i].nG); 
+        DebugPrint("Load", dataIn, fList[i].nG);
 #endif
         Qnorm1(dataIn, dIndex, fList[i].nG); // dataIn returns ordered and Index contains the origial position
 
 #ifdef DEBUG
-        DebugPrint("Sorted", dataIn, nG);         
+        DebugPrint("Sorted", dataIn, nG);
 #endif
-        
+
         AccumulateRow(AvG, dataIn , nG);
 
         // now decide how to proceed with indexes
         if (p->MemIndex) { // in memory - full
-          for (j=0;j<nG;j++) 
+          for (j=0;j<nG;j++)
             mIndex[j][i]= dIndex[j];
         } else {         // in disk
           fseek(fI, nG*i*sizeof(int), SEEK_SET);
@@ -127,7 +127,7 @@ void QNormMain(struct params *p, struct Files* fList){
 
    // Row average  ----------------------------------------------
 
-   for (i=0;i<nG;i++) 
+   for (i=0;i<nG;i++)
        AvG[i].Av /=AvG[i].num;
 
 /*      if ((__finite(AvG[i].Av))&&(!__isnan(AvG[i].Av)))
@@ -137,14 +137,14 @@ void QNormMain(struct params *p, struct Files* fList){
 
 #ifdef DEBUG
      fprintf(stderr, "Row Average------------\n");
-     for (j=0;j<nG;j++) fprintf (stderr,"%f (%d) ", AvG[j].Av,AvG[j].num); 
+     for (j=0;j<nG;j++) fprintf (stderr,"%f (%d) ", AvG[j].Av,AvG[j].num);
      fprintf(stderr,"\n");
 #endif
 
 
    // Finally produce the ORDERED output file [STEP 2]-------------------------
 
-   if (!p->MemIndex) { 
+   if (!p->MemIndex) {
       fclose(fI);
       if ((fI=fopen("~tmp","rb"))==NULL) terror("opening tmp-index for reading file");
    }
@@ -156,7 +156,7 @@ void QNormMain(struct params *p, struct Files* fList){
 
    for (i=0;i<nE;i++) {
         if (p->MemIndex) { // in memory - full
-          for (j=0;j<nG;j++) 
+          for (j=0;j<nG;j++)
             dIndex[j]=mIndex[j][i];
         } else {
           fseek(fI, nG*i*sizeof(int), SEEK_SET);
@@ -170,17 +170,17 @@ void QNormMain(struct params *p, struct Files* fList){
 
 
         // complete the output vector
-        for (j=0;j<nG;j++) 
+        for (j=0;j<nG;j++)
           dataOut[dIndex[j]]=AvG[j].Av; // OJO
 
 #ifdef DEBUG
         fprintf(stderr,"[pos=%ld] ",(long)nG*i*sizeof(double));
-        DebugPrint("Out to write", dataOut, nG); 
+        DebugPrint("Out to write", dataOut, nG);
 #endif
 
         fseek(fOut, (long)nG*i*sizeof(double), SEEK_SET);
         fwrite(dataOut, sizeof(double), nG, fOut);
-           
+
    }
    fclose(fOut);
    if (!p->MemIndex) fclose(fI);
@@ -195,38 +195,38 @@ void QNormMain(struct params *p, struct Files* fList){
 // input returns ordered and Index contains the origial position
 
 int Qnorm1(double *input, int *dIndex, int nG){
-	int i,j,k,n;
+    int i,j,k,n;
 
-	for (j=0; j<nG;j++) dIndex[j]=j; // init the indexes array
+    for (j=0; j<nG;j++) dIndex[j]=j; // init the indexes array
 
 /*
-	for (j=0; j<nG;j++) // UNIFY NAN CONSTANT 
-	   if ((!__finite(input[j]))||(__isnan(input[j]))) input[j]=HUGE_VAL;
+    for (j=0; j<nG;j++) // UNIFY NAN CONSTANT
+       if ((!__finite(input[j]))||(__isnan(input[j]))) input[j]=HUGE_VAL;
 */
 
-	QsortC(input,0,nG-1,dIndex); // Quicksort 
+    QsortC(input,0,nG-1,dIndex); // Quicksort
 
         return 1;
 }
 
 void AccumulateRow(struct Average *AvG, double *input , int nG){
         int i;
- 	
+     
         for (i=0;i<nG;i++) {
 
 /*
            if ((__finite(input[i])&&(!__isnan(input[i])))){
-		if ((!__finite(AvG[i].Av))||(__isnan(AvG[i].Av))){
-			AvG[i].Av=0;
-		}
+        if ((!__finite(AvG[i].Av))||(__isnan(AvG[i].Av))){
+            AvG[i].Av=0;
+        }
 */
-		AvG[i].Av+=input[i];
-		AvG[i].num++;
+        AvG[i].Av+=input[i];
+        AvG[i].num++;
 /*           }
-*/	}
+*/    }
 
 
-	return;
+    return;
 
 }
 
