@@ -42,16 +42,15 @@
 
 int main(int ac, char **av){
 
-        struct Files *fList=NULL;
-        struct params *p=NULL;
+    struct Files *fList=NULL;
+    struct params *p=NULL;
 
-        p = CommandLine(ac,av);
+    p = CommandLine(ac,av);
 
     if ((fList=LoadListOfFiles(p))==NULL)
            terror("Loading list of files");
 
-        QNormMain(p,fList);    
-
+    QNormMain(p,fList);    
     
     return 1;
 }
@@ -120,9 +119,6 @@ void QNormMain(struct params *p, struct Files* fList){
         fprintf(stderr,"Index (col=%d)\n",i);
         for (j=0;j<nG;j++) fprintf (stderr,"%d ", dIndex[j]); fprintf(stderr,"\n");
 #endif
-
-
-
    }
 
    // Row average  ----------------------------------------------
