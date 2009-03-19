@@ -1,0 +1,34 @@
+A small testing dataset for the QNorm parallellization initiative created by Pjotr.
+
+This test contains GSE10940 - a Affymetrix Drosophila set with 18952 probes on
+12 arrays. This set comes with three defined values - where I took VALUE3 as it
+is the one not normalized.
+
+	VALUE [dCHIP_PMMM]: All 6 chips were analyzed simultaneously in dCHIP, which
+	use s a model-based algorithm to estimate expression values. The
+	normalization procedure implemented in dCHIP normalizes all arrays in the
+	analysis against the arra y with median intensity. This array was analyzed
+	using the PM-MM procedure under default parameters.
+
+	VALUE2 [dCHIP_PMonly]: All 6 chips were analyzed simultaneously in dCHIP,
+	which uses a model-based algorithm to estimate expression values. The
+	normalization procedure implemented in dCHIP normalizes all arrays in the
+	analysis against the a rray with median intensity. This array was analyzed
+	using the PM_only procedure under default parameters.
+
+	VALUE3 [GCOS]: Expression values were computed using the recommended settings
+	in GCOS version 1.2. All probesets were scaled using a TGT value of 500, and
+	no normalization was applied (i.e., the normalization factor was 1.0).
+
+The CSV datasets were generated with the following commands using my microarray
+MINiML software directly from the GEO family file.
+
+Create separate files for each array:
+
+  time ruby -I ~/izip/git/opensource/bioruby-testing-pjotr/ -I ~/.gems/gems/xml-simple-1.0.12/lib/ ~/izip/git/opensource/biotools/bin/geo_family_probevalues.rb GSE10940_family.xml --fields VALUE3
+
+Create a matrix file:
+
+  time ruby -I ~/izip/git/opensource/bioruby-testing-pjotr/ -I ~/.gems/gems/xml-simple-1.0.12/lib/ ~/izip/git/opensource/biotools/bin/geo_family2table.rb GSE10940_family.xml --fields VALUE3
+
+To create these files took about 30 seconds on my laptop.
