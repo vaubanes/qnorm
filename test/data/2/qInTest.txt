@@ -1,0 +1,12 @@
+@ are used as comment lines
+@ line format: fileName[TAB]nGenes[TAB]FileType[NEWLINE]
+@ Types of files: t:text, one velue in each line
+@
+./f1.txt 	10	t
+./f2.txt 	10	t
+./f3.txt 	10	t
+./f4.txt 	10	t
+./f5.txt 	10	t
+./f6.txt 	10	t
+./f7.txt 	10	t
+./f8.txt 	10	t

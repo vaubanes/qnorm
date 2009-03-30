@@ -6,6 +6,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 #include <math.h>
 
 #define MAXLIN   500
@@ -20,6 +22,7 @@ struct Files { // LIst of files
    char *fname;
    int nG;
    char fType;
+   int pos;
 };
 
 struct Average { // Average array
@@ -36,6 +39,7 @@ struct params {// Parameters struct-----------------
   int  MemIndex;            // store Index in (1) memory or (0) in disk
   int  nG;                  // Number of Genes (rows)
   int  nE;                  // Number of Experiments or samples(cols)
+  int  Verbose;             // Not(0) (default) / yes (1)
 };
 
 // Function protorypes------------------------------------------
@@ -47,7 +51,7 @@ void LoadFile(struct Files*, int, double *);
 void terror(char *);
 void Alerta(char *,char *);
 
-void DebugPrint(char *, double*, int);
+void DebugPrint(char *, int, double*, int); 
 int  TransposeBin2Txt(struct params*);
 void QsortC(double *array,int l,int r,int *index);
 int partition( double* a, int l, int r, int *indexes);

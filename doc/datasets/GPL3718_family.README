@@ -1,0 +1,47 @@
+GPL3718 large_test_family
+=========================
+
+A large SNP testing dataset for the QNorm parallellization initiative.
+
+This test contains a large human SNP Affymetrix dataset. Different experimenters
+used different column names, and methods, when uploading their data to GEO.
+
+One type:
+
+        VALUE: Genotypes: AA, AB, BB, No Call
+        DETECTION P-VALUE
+        MedianS: Median signal
+        RAS1: Relative allele signal for data in the first probe group
+        RAS2: Relative allele signal for data in the second probe group
+
+another:
+
+        CONFIDENCE (rather than P-VALUE)
+
+another:
+
+        ID_REF
+        VALUE Log2(estimated test/reference intensity ratio)
+
+then:
+
+        VALUE: GLAD segmented copy number
+
+then:
+
+        VALUE: Score
+ 
+then:
+
+        log2ratio_AB: raw signal ratios
+        log2ratio_A: raw signal ratios
+        log2ratio_B: raw signal ratios 
+        N_AB: total copy number inferred from raw signal ratios (log 2 ra
+tio AB) based on  hidden Markov
+        N_A: allele specific copy number inferred from raw signal ratios
+ (log 2 ratio A) based on hidden Markov
+
+I am afraid it is impossible to normalize this set.
+
+
+
