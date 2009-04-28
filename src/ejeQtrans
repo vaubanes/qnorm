@@ -1,0 +1,1 @@
+time ./qtrans -i=qInGSM17.txt  -e=39 -e=4 -g=6553600  -o=saleSEQ.bin -V 

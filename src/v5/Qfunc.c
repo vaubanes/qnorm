@@ -8,7 +8,6 @@
 #include "Qfunc.h"
 
 
-// read command line arguments
 
 struct params *CommandLine(int argc, char *argv[])
 {
@@ -82,10 +81,10 @@ struct Files* LoadListOfFiles(struct params *p) {
            terror("memory for list of files");
 
         fgets(line,MAXLIN,f);
-        while(!feof(f)) {
+        j=3;
+        while(!feof(f) && j==3) {
 
            if (line[0]!='@') {
-
              j=sscanf(line,"%s\t%d\t%c\n",lin2,&g,&t);         
              if (N==p->nE) {
                 if (p->Verbose) 
@@ -129,7 +128,6 @@ struct Files* LoadListOfFiles(struct params *p) {
 
  
 
-// recursive Qsort--------------------------------(not used)
 void QsortC(double *array,int l,int r,int *index)
 {
    int j;
@@ -153,14 +151,17 @@ int partition( double* a, int l, int r, int *indexes) {
    //i = l; 
    //j = r+1;
 		
-   while( 1) {
-     do{ ++i; 
-      }while( a[i] <= pivot && i <= r );
-     do{ --j; 
-      }while( a[j] > pivot );
-     if( i >= j ) break;
-     t = a[i]; a[i] = a[j]; a[j] = t;
-     k=indexes[i];indexes[i]=indexes[j];indexes[j]=k;
+   while( 1)
+   {
+	   do{
+			++i; 
+	   }while( a[i] <= pivot && i <= r );
+	   do{
+		   --j; 
+	   }while( a[j] > pivot );
+   		if( i >= j ) break;
+   		t = a[i]; a[i] = a[j]; a[j] = t;
+		k=indexes[i];indexes[i]=indexes[j];indexes[j]=k;
    }
    t = a[l]; a[l] = a[j]; a[j] = t;
    k=indexes[l];indexes[l]=indexes[j];indexes[j]=k;
@@ -172,53 +173,44 @@ int partition( double* a, int l, int r, int *indexes) {
 
 // Transpose from Disk to Disk the binary matrix into a tab delimited text file
 
-int TransposeBin2Txt(struct params *p,char**probeID){
-	FILE *f,*f1;
-        double **mat,val;
-	int i,j,k;
+int TransposeBin2Txt(struct params *p){
+	FILE *f;
+        double val, **mat;
+	int i,j;
         char NewName[MAXLIN];
         int nG=p->nG;
         int nE=p->nE;
-        int BLQ=1000;
-        int From=0,pos;
-    
-        if (BLQ>nG) BLQ=nG;
 
         if ((f=fopen(p->fOutName,"rb"))==NULL)
            terror("[Bin2Text] opening binary output file");
 
+        if ((mat=(double **)calloc(nG,sizeof(double*)))==NULL) terror("[Bin2Text] memory for index1");
+        for (i=0; i<nG;i++)
+          if((mat[i]=(double *)calloc(nE,sizeof(double)))==NULL) terror("[Bin2Text] memory for index2 full matrix");
+  
+	for (i=0; i<nE;i++){
+	   for (j=0; j<nG; j++){
+                fread(&val, 1, sizeof(double), f);
+                mat[j][i]=val;                
+           }
+	}
+        fclose(f);
+
+        // Save trasposed text tabulated
+
         sprintf(NewName,"%s.txt",p->fOutName);
-        if (p->Verbose)fprintf(stderr,"out...%s\n",NewName);
-        if ((f1=fopen(NewName,"wt"))==NULL) 
+        if ((f=fopen(NewName,"wt"))==NULL) 
            terror("[Bin2Text] opening tabulated text file out");
 
-        if ((mat=(double **)calloc(nE,sizeof(double*)))==NULL)
-            terror("[Bin2Text] memory for index1");
-        for (i=0; i<nE;i++)
-          if((mat[i]=(double *)calloc(BLQ,sizeof(double)))==NULL) 
-              terror("[Bin2Text] memory for index2 full matrix");
-  
-        while (From<=nG) { 
-          if (p->Verbose) fprintf(stderr,"Blq=%d of %d\n",From,nG);
-	  for (i=0; i<nE;i++){ // read a BLQ of genes from each Exp
-             pos=(i*nG+From)*sizeof(double);
-             fseek(f, pos, SEEK_SET); 
-             fread(mat[i], BLQ, sizeof(double), f);
-          }
-
-          // Save a BLQ trasposed text tabulated
-
-	  for (i=0; i<BLQ&&From+i<nG;i++){
-             fprintf(f1,"%s",probeID[From+i]);
-	     for (j=0; j<nE; j++)
-                  fprintf(f1,"\t%lf",mat[j][i]);
-             fprintf(f1,"\n");
+	for (i=0; i<nG;i++){
+	   for (j=0; j<nE; j++){
+                if (j) fprintf(f,"\t");
+                fprintf(f,"%lf",mat[i][j]);
            }
-           From+=BLQ;
-        }
+           fprintf(f,"\n");
+         }
 	
         fclose(f);
-        fclose(f1);
 	
 	return 1;
 }
@@ -228,12 +220,13 @@ int TransposeBin2Txt(struct params *p,char**probeID){
 // Dummy functions : read a datafile (case t: text: one line/one value)
 
 void LoadFile(struct Files*fList, int col, double *dataIn){
+
         FILE *f;
         char line[MAXLIN],lin2[MAXLIN],t;
         int N=0,j,g,i;
-        char probeID[255];
         double x;
-        
+
+
         switch(fList[col].fType){
            case 't':
                      if ((f=fopen(fList[col].fname,"rt"))==NULL) {
@@ -241,40 +234,13 @@ void LoadFile(struct Files*fList, int col, double *dataIn){
                         terror("opening input file (LoadFIle function)");
                      }
                      for (i=0;i<fList[col].nG;i++) {
-                       fscanf(f,"%s\t%lf\n",probeID,&x);
+                       fscanf(f,"%lf\n",&x);
                        dataIn[i]=x;
                      }
                      fclose(f);
                      break;
-           default : terror("unknow (LoadFile) type of file");
+           default : terror("unknow type of file");
         }
-
-}
-
-char ** LoadprobeID(struct Files* fList, struct params *p){
-        FILE *f;
-        int i;
-        char probeID[255],**probe;
-        int col=0;
-        double x;
-
-        if ((probe=(char **)calloc(p->nG,sizeof(char*)))==NULL) 
-           terror("[Bin2Text] memory for probes");
-        switch(fList[col].fType){
-           case 't':
-                     if ((f=fopen(fList[col].fname,"rt"))==NULL) {
-                        fprintf(stderr,"file:%s\n",fList[col].fname);
-                        terror("opening input file (LoadFIle function)");
-                     }
-                     for (i=0;i<fList[col].nG;i++) {
-                       fscanf(f,"%s\t%lf\n",probeID,&x);
-                       probe[i]=strdup(probeID);
-                     }
-                     fclose(f);
-                     break;
-           default : terror("unknow (loadProbeID) type of file");
-        }
-       return probe;
 
 }
 

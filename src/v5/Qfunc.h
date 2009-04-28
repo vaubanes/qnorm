@@ -10,7 +10,7 @@
 #include <ctype.h>
 #include <math.h>
 
-#define MAXLIN   1000
+#define MAXLIN   500
 #define MAXnP    4
 #define NGEN     15
 #define NEXP     2
@@ -52,7 +52,7 @@ void terror(char *);
 void Alerta(char *,char *);
 
 void DebugPrint(char *, int, double*, int); 
-int  TransposeBin2Txt(struct params*, char**);
+int  TransposeBin2Txt(struct params*);
 void QsortC(double *array,int l,int r,int *index);
 int partition( double* a, int l, int r, int *indexes);
 
@@ -60,7 +60,5 @@ int partition( double* a, int l, int r, int *indexes);
 void QNormMain(struct params*, struct Files*);
 void AccumulateRow(struct Average *, double *, int);
 int Qnorm1(double *, int *, int);
-
-char ** LoadprobeID(struct Files*, struct params *);
 
 // ===============================================================================
